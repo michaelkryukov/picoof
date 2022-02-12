@@ -29,7 +29,6 @@ jobs:
           tags: |
             michaelkryukov/picoof:${{ github.event.release.tag_name }}
             michaelkryukov/picoof:latest
-          push: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
