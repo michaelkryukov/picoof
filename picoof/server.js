@@ -1,18 +1,18 @@
-const http = require("http");
-const process = require("process");
-const { getBrowser } = require("./browser");
-const { log, isObject } = require("./utils");
+const http = require('http');
+const process = require('process');
+const { getBrowser } = require('./browser');
+const { log, isObject } = require('./utils');
 const {
   getRequestContext,
   createNewPage,
   preparePage,
   produceResponse,
-} = require("./app");
+} = require('./app');
 
 class ProcessingCompleted extends Error {
   constructor(message) {
     super(message);
-    this.name = "ProcessingCompleted";
+    this.name = 'ProcessingCompleted';
   }
 }
 
@@ -39,7 +39,7 @@ const requestHandlerWrapper = async (req, res) => {
 
   const reply = async (status, content) => {
     if (isObject(content)) {
-      res.setHeader("content-type", "application/json");
+      res.setHeader('content-type', 'application/json');
       res.writeHead(status);
       res.end(JSON.stringify(content));
     } else {
@@ -50,20 +50,20 @@ const requestHandlerWrapper = async (req, res) => {
     const elapsedMs = Date.now() - startedAt;
     log(`${req.method} '${req.url}' ${status} (${elapsedMs}ms)`);
 
-    throw new ProcessingCompleted("Request processing was completed");
+    throw new ProcessingCompleted('Request processing was completed');
   };
 
   try {
     await requestHandler(req, reply);
   } catch (error) {
-    if (error.name === "ProcessingCompleted") {
+    if (error.name === 'ProcessingCompleted') {
       return;
     }
 
     res.writeHead(500);
-    res.end("");
+    res.end('');
 
-    const timestamp = new Date().toLocaleString().replace(",", "");
+    const timestamp = new Date().toLocaleString().replace(',', '');
     error.message += ` (at ${timestamp})`;
 
     throw error;
@@ -73,15 +73,15 @@ const requestHandlerWrapper = async (req, res) => {
 const startServer = () => {
   const server = http.createServer(requestHandlerWrapper);
 
-  const handleExit = async (_) => {
+  const handleExit = async () => {
     server.close(async () => {
       const browser = await getBrowser();
       await browser.close();
     });
   };
 
-  process.on("SIGINT", handleExit);
-  process.on("SIGTERM", handleExit);
+  process.on('SIGINT', handleExit);
+  process.on('SIGTERM', handleExit);
 
   server.listen(8080);
 };

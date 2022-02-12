@@ -4,12 +4,16 @@
   "description": "microservice for producing images and pdfs from html",
   "main": "supervisor -w .,./_resources -k picoof/server.js",
   "scripts": {
+    "lint": "npx eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "puppeteer": "13.0.1"
+    "puppeteer": "^13.3.1"
   },
   "devDependencies": {
+    "eslint": "^8.9.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
     "supervisor": "0.12.0"
   },
   "author": "Michael Kryukov",

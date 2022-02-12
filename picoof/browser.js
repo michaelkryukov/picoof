@@ -1,4 +1,4 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require('puppeteer');
 
 const makeBrowserGetter = () => {
   let browserInstance = null;
@@ -6,7 +6,7 @@ const makeBrowserGetter = () => {
   return async () => {
     if (browserInstance === null) {
       browserInstance = await puppeteer.launch({
-        args: ["--no-sandbox", "--disable-dev-shm-usage"],
+        args: ['--no-sandbox', '--disable-dev-shm-usage'],
       });
     }
 

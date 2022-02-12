@@ -1,7 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const { toBoolean, readString, handleSearchParams } = require("./utils");
-const { RESOURCES_DIR, DISABLE_NETWORK } = require("./config");
+const fs = require('fs');
+const path = require('path');
+const {
+  log, toBoolean, readString, handleSearchParams,
+} = require('./utils');
+const { RESOURCES_DIR, DISABLE_NETWORK } = require('./config');
 
 const getResourcesFromDisk = () => {
   if (!RESOURCES_DIR) {
@@ -22,16 +24,14 @@ const getResourcesFromDisk = () => {
       } else {
         const relativePath = path.relative(RESOURCES_DIR, filePath);
 
-        result[`local/${relativePath}`] = () => {
-          return new Promise((resolve, reject) => {
-            fs.readFile(filePath, function (err, data) {
-              if (err) {
-                reject(err);
-              }
-              resolve(data);
-            });
+        result[`local/${relativePath}`] = () => new Promise((resolve, reject) => {
+          fs.readFile(filePath, (err, data) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(data);
           });
-        };
+        });
       }
     }
 
@@ -55,10 +55,10 @@ module.exports.getRequestContext = async (req, reply) => {
   };
 
   // Validate request url
-  if (context.$path === "/png") {
-    context.$responseKind = "png";
-  } else if (context.$path === "/pdf") {
-    context.$responseKind = "pdf";
+  if (context.$path === '/png') {
+    context.$responseKind = 'png';
+  } else if (context.$path === '/pdf') {
+    context.$responseKind = 'pdf';
   } else {
     await context.$reply(404, {
       reason: `Unknown endpoint: '${context.$path}'`,
@@ -72,15 +72,15 @@ module.exports.getRequestContext = async (req, reply) => {
   }
 
   // Update context with data from body if method is 'POST'
-  if (req.method == "POST") {
+  if (req.method === 'POST') {
     const rawBody = await readString(req);
     let body;
 
-    switch (req.headers["content-type"]) {
-      case "application/x-www-form-urlencoded":
+    switch (req.headers['content-type']) {
+      case 'application/x-www-form-urlencoded':
         body = handleSearchParams(new URLSearchParams(rawBody));
         break;
-      case "application/json":
+      case 'application/json':
         body = JSON.parse(rawBody);
         break;
       default:
@@ -91,8 +91,8 @@ module.exports.getRequestContext = async (req, reply) => {
   }
 
   // Handle resources
-  if (context["resources[]"]) {
-    for (const resource of context["resources[]"]) {
+  if (context['resources[]']) {
+    for (const resource of context['resources[]']) {
       const parsedResource = JSON.parse(resource);
 
       if (!parsedResource.path || !parsedResource.content) {
@@ -108,7 +108,7 @@ module.exports.getRequestContext = async (req, reply) => {
 };
 
 const loadResourceFromSource = async (source) => {
-  if (typeof source === "function") {
+  if (typeof source === 'function') {
     return await source();
   }
 
@@ -116,23 +116,23 @@ const loadResourceFromSource = async (source) => {
 };
 
 const guessContentType = (resourceKey) => {
-  if (resourceKey.endsWith(".html")) {
-    return "text/html";
+  if (resourceKey.endsWith('.html')) {
+    return 'text/html';
   }
-  if (resourceKey.endsWith(".js")) {
-    return "text/javascript";
+  if (resourceKey.endsWith('.js')) {
+    return 'text/javascript';
   }
-  if (resourceKey.endsWith(".css")) {
-    return "text/css";
+  if (resourceKey.endsWith('.css')) {
+    return 'text/css';
   }
-  if (resourceKey.endsWith(".html")) {
-    return "text/html";
+  if (resourceKey.endsWith('.html')) {
+    return 'text/html';
   }
-  if (resourceKey.endsWith(".png")) {
-    return "image/png";
+  if (resourceKey.endsWith('.png')) {
+    return 'image/png';
   }
-  if (resourceKey.endsWith(".jpg") || resourceKey.endsWith(".jpeg")) {
-    return "image/jpeg";
+  if (resourceKey.endsWith('.jpg') || resourceKey.endsWith('.jpeg')) {
+    return 'image/jpeg';
   }
   return null;
 };
@@ -142,15 +142,15 @@ module.exports.createNewPage = async (browser, context) => {
 
   await page.setRequestInterception(true);
 
-  page.on("pageerror", function (err) {
+  page.on('pageerror', (err) => {
     log(`Pageerror while rendering page: ${err}`);
   });
 
-  page.on("error", function (err) {
+  page.on('error', (err) => {
     log(`Error while rendering page: ${err}`);
   });
 
-  page.on("request", async (req) => {
+  page.on('request', async (req) => {
     if (req.isInterceptResolutionHandled()) {
       return;
     }
@@ -179,7 +179,7 @@ module.exports.createNewPage = async (browser, context) => {
     await req.respond({
       body: resource,
       headers: {
-        ...(contentType ? { "Content-Type": contentType } : {}),
+        ...(contentType ? { 'Content-Type': contentType } : {}),
       },
     });
   });
@@ -189,14 +189,14 @@ module.exports.createNewPage = async (browser, context) => {
 
 module.exports.preparePage = async (page, context) => {
   await page.setViewport({
-    width: new Number(context.width || 800),
-    height: new Number(context.height || 600),
+    width: Number(context.width || 800),
+    height: Number(context.height || 600),
   });
 
   if (context.url) {
     if (
-      !context.url.startsWith("http://") &&
-      !context.url.startsWith("https://")
+      !context.url.startsWith('http://')
+      && !context.url.startsWith('https://')
     ) {
       await context.$reply(400, {
         reason: "Provided url should start with 'http://' or 'https://'",
@@ -204,7 +204,7 @@ module.exports.preparePage = async (page, context) => {
     }
 
     await page.goto(context.url, {
-      waitUntil: context.waitUntil || "networkidle0",
+      waitUntil: context.waitUntil || 'networkidle0',
     });
 
     return page;
@@ -212,25 +212,29 @@ module.exports.preparePage = async (page, context) => {
 
   if (context.content) {
     await page.setContent(context.content, {
-      waitUntil: context.waitUntil || "networkidle0",
+      waitUntil: context.waitUntil || 'networkidle0',
     });
 
     return page;
   }
+
+  return page;
 };
 
 module.exports.produceResponse = async (page, context) => {
-  if (context.$responseKind === "png") {
+  if (context.$responseKind === 'png') {
     return await page.screenshot({ fullPage: context.fullPage || true });
   }
 
-  if (context.$responseKind === "pdf") {
-    await page.emulateMediaType("screen");
+  if (context.$responseKind === 'pdf') {
+    await page.emulateMediaType('screen');
 
     return await page.pdf({
-      format: context.format || "A4",
+      format: context.format || 'A4',
       landscape: toBoolean(context.landscape),
       printBackground: true,
     });
   }
+
+  return null;
 };

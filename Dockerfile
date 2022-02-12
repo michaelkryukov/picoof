@@ -2,7 +2,8 @@ FROM alpine:3
 
 # Setup proper locale and language support
 ENV MUSL_LOCPATH=/usr/local/share/i18n/locales/musl
-RUN apk add --update git cmake make musl-dev gcc gettext-dev libintl && \
+RUN apk add --no-cache --update \
+        git cmake make musl-dev gcc gettext-dev libintl && \
     cd /tmp && \
     git clone https://github.com/rilian-la-te/musl-locales.git && \
     cd /tmp/musl-locales && \
