@@ -12,6 +12,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Check codebase
+      - name: Install requirements
+        run: npm i --ci
+
+      - name: Run linting
+        run: npm run lint
+
+      # Setup docker, build and publish image
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
