@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  picoof:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./picoof:/app/picoof
+      - ./_resources:/resources
+    environment: {}

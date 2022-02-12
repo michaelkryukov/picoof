@@ -1,0 +1,17 @@
+{
+  "name": "picoof",
+  "version": "0.0.1",
+  "description": "microservice for producing images and pdfs from html",
+  "main": "supervisor -w .,./_resources -k picoof/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "puppeteer": "13.0.1"
+  },
+  "devDependencies": {
+    "supervisor": "0.12.0"
+  },
+  "author": "Michael Kryukov",
+  "license": "ISC"
+}
