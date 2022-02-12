@@ -3,9 +3,9 @@ version: '3.7'
 services:
   picoof:
     image: michaelkryukov/picoof:latest
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "8080:8080"
