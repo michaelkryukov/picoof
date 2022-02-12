@@ -2,7 +2,7 @@ name: Check, build and publish
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   build-and-push-docker-image:
@@ -28,7 +28,7 @@ jobs:
         with:
           context: .
           tags: |
-            ghcr.io/michaelkryukov/picoof:${GITHUB_REF##*/}
+            ghcr.io/michaelkryukov/picoof:${{ github.event.release.tag_name }}
             ghcr.io/michaelkryukov/picoof:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
