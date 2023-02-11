@@ -39,5 +39,5 @@ module.exports.handleSearchParams = (searchParams) => {
 
 module.exports.log = (message) => {
   const timestamp = new Date().toLocaleString().replace(',', '');
-  console.log(`[${timestamp}] ${message})`);
+  console.log(`[${timestamp}] ${message}`);
 };
